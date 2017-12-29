@@ -7,6 +7,7 @@ option(STATIC "Compile against static libraries" OFF)
 ## END OPTIONS
 
 set(Boost_DEBUG ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
 if(STATIC)
   set(Boost_USE_STATIC_LIBS ON)
 endif()
