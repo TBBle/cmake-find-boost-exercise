@@ -11,43 +11,43 @@ environment:
   matrix:
     - BOOST_ROOT: C:/Libraries/boost_1_65_1
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
     - BOOST_ROOT: C:/Libraries/boost_1_64_0
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
     - BOOST_ROOT: C:/Libraries/boost_1_63_0
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
     - BOOST_ROOT: C:/Libraries/boost_1_62_0
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
     - BOOST_ROOT: C:/Libraries/boost_1_60_0
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
     - BOOST_ROOT: C:/Libraries/boost_1_59_0
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
     - BOOST_ROOT: C:/Libraries/boost_1_58_0
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
       # 1.56.0
     - BOOST_ROOT: C:/Libraries/boost
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      AUTOLINK: OFF
+      AUTOLINK: ON
       STATIC: ON
 
 build_script:
