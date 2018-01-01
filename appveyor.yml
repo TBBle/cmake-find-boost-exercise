@@ -85,6 +85,7 @@ install:
         if ($Env:MSYS_UPDATE -eq "ON")
         {
           "$CMD_PREFIX 'pacman -Sy --noconfirm --noprogressbar'" | Invoke-Expression
+          if ($LastExitCode -ne 0) { exit }
         }
 
         if ($Env:PLATFORM -eq "x64")
@@ -94,6 +95,7 @@ install:
           $PKG_PREFIX="mingw-w64-i686-"
         }
         "$CMD_PREFIX 'pacman -S --needed --noconfirm --noprogressbar ${PKG_PREFIX}cmake ${PKG_PREFIX}boost ${PKG_PREFIX}gcc ${PKG_PREFIX}ninja'" | Invoke-Expression
+        if ($LastExitCode -ne 0) { exit }
       }
 
 build_script:
@@ -117,11 +119,15 @@ build_script:
       {
         # Single-config generator
         ($CMD_PREFIX + "cmake .. -G `"${Env:GENERATOR}`" -DCMAKE_BUILD_TYPE=$Env:CONFIGURATION -DAUTOLINK=$Env:AUTOLINK -DSTATIC=$Env:STATIC" + $CMD_SUFFIX) | Invoke-Expression
+        if ($LastExitCode -ne 0) { exit }
         ($CMD_PREFIX + "cmake --build ." + $CMD_SUFFIX) | Invoke-Expression
+        if ($LastExitCode -ne 0) { exit }
       } else {
         # Multi-config generator
         ($CMD_PREFIX + "cmake .. -G `"${Env:GENERATOR}`" -A $Env:PLATFORM -DAUTOLINK=$Env:AUTOLINK -DSTATIC=$Env:STATIC" + $CMD_SUFFIX) | Invoke-Expression
+        if ($LastExitCode -ne 0) { exit }
         ($CMD_PREFIX + "cmake --build . --config $Env:CONFIGURATION" + $CMD_SUFFIX) | Invoke-Expression
+        if ($LastExitCode -ne 0) { exit }
       }
 
 test: off
