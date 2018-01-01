@@ -156,7 +156,12 @@ test_script:
       if (Test-Path $BIN_PATH)
       {
         ($CMD_PREFIX + $BIN_PATH + $CMD_SUFFIX) | Invoke-Expression
-        if ($LastExitCode -ne 0) { exit }
+        if ($LastExitCode -ne 0)
+        {
+          Add-AppveyorTest -Name datetime_1 -Framework None -FileName $BIN_PATH -Outcome Failed
+        } else {
+          Add-AppveyorTest -Name datetime_1 -Framework None -FileName $BIN_PATH -Outcome Passed
+        }
       } else {
-        exit 1
+        Add-AppveyorTest -Name datetime_1 -Framework None -FileName $BIN_PATH -Outcome NotFound
       }
