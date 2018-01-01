@@ -130,4 +130,33 @@ build_script:
         if ($LastExitCode -ne 0) { exit }
       }
 
-test: off
+test_script:
+  - ps: |
+      # Already in build/ after the build script
+
+      if ($Env:MSYS -eq "ON")
+      {
+        $MSYS_PWD=(Get-Location).Path -replace "\\", "/"
+        if ($Env:PLATFORM -eq "x64")
+        {
+          $CMD_PREFIX="${Env:MSYS_PATH}/usr/bin/env MSYSTEM=MINGW64 /bin/bash -l -c 'cd $MSYS_PWD && "
+        } else {
+          $CMD_PREFIX="${Env:MSYS_PATH}/usr/bin/env MSYSTEM=MINGW32 /bin/bash -l -c 'cd $MSYS_PWD && "
+        }
+        $CMD_SUFFIX="'"
+      }
+
+      if ($Env:GENERATOR -eq "Ninja")
+      {
+        $BIN_PATH="./datetime_1.exe"
+      } else {
+        $BIN_PATH="${Env:CONFIGURATION}/datetime_1.exe"
+      }
+
+      if (Test-Path $BIN_PATH)
+      {
+        ($CMD_PREFIX + $BIN_PATH + $CMD_SUFFIX) | Invoke-Expression
+        if ($LastExitCode -ne 0) { exit }
+      } else {
+        exit 1
+      }
