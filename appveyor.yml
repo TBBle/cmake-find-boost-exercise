@@ -10,7 +10,17 @@ configuration:
 
 # https://www.appveyor.com/docs/build-environment/#boost
 environment:
+  global:
+    # https://www.appveyor.com/docs/build-environment/#mingw-msys-cygwin
+    MSYS_PATH: C:/msys64
+
   matrix:
+      # Whatever msys2 happens to support today
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      GENERATOR: Ninja
+      STATIC: OFF
+      MSYS: ON
+
     - BOOST_ROOT: C:/Libraries/boost_1_65_1
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       GENERATOR: Visual Studio 15 2017
@@ -60,11 +70,46 @@ environment:
       AUTOLINK: ON
       STATIC: ON
 
+install:
+  - ps: |
+      if ($Env:MSYS -eq "ON")
+      {
+        $CMD_PREFIX="${Env:MSYS_PATH}/usr/bin/env MSYSTEM=MSYS /bin/bash -l -c"
+        if ($Env:PLATFORM -eq "x64")
+        {
+          $PKG_PREFIX="mingw-w64-x86_64-"
+        } else {
+          $PKG_PREFIX="mingw-w64-i686-"
+        }
+        "$CMD_PREFIX 'pacman -S --needed --noconfirm --noprogressbar ${PKG_PREFIX}cmake ${PKG_PREFIX}boost ${PKG_PREFIX}gcc ${PKG_PREFIX}ninja'" | Invoke-Expression
+      }
+
 build_script:
   - ps: |
       mkdir build
       cd build
-      cmake .. -G $Env:GENERATOR -A $Env:PLATFORM -DAUTOLINK=$Env:AUTOLINK -DSTATIC=$Env:STATIC
-      cmake --build . --config $Env:CONFIGURATION
+
+      if ($Env:MSYS -eq "ON")
+      {
+        $MSYS_PWD=(Get-Location).Path -replace "\\", "/"
+        if ($Env:PLATFORM -eq "x64")
+        {
+          $CMD_PREFIX="${Env:MSYS_PATH}/usr/bin/env MSYSTEM=MINGW64 /bin/bash -l -c 'cd $MSYS_PWD && "
+        } else {
+          $CMD_PREFIX="${Env:MSYS_PATH}/usr/bin/env MSYSTEM=MINGW32 /bin/bash -l -c 'cd $MSYS_PWD && "
+        }
+        $CMD_SUFFIX="'"
+      }
+
+      if ($Env:GENERATOR -eq "Ninja")
+      {
+        # Single-config generator
+        ($CMD_PREFIX + "cmake .. -G `"${Env:GENERATOR}`" -DCMAKE_BUILD_TYPE=$Env:CONFIGURATION -DAUTOLINK=$Env:AUTOLINK -DSTATIC=$Env:STATIC" + $CMD_SUFFIX) | Invoke-Expression
+        ($CMD_PREFIX + "cmake --build ." + $CMD_SUFFIX) | Invoke-Expression
+      } else {
+        # Multi-config generator
+        ($CMD_PREFIX + "cmake .. -G `"${Env:GENERATOR}`" -A $Env:PLATFORM -DAUTOLINK=$Env:AUTOLINK -DSTATIC=$Env:STATIC" + $CMD_SUFFIX) | Invoke-Expression
+        ($CMD_PREFIX + "cmake --build . --config $Env:CONFIGURATION" + $CMD_SUFFIX) | Invoke-Expression
+      }
 
 test: off
