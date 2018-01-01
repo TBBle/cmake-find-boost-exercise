@@ -20,6 +20,13 @@ environment:
       GENERATOR: Ninja
       STATIC: OFF
       MSYS: ON
+      MSYS_UPDATE: ON
+
+      # Whatever msys2 happens to support when last updated
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      GENERATOR: Ninja
+      STATIC: OFF
+      MSYS: ON
 
     - BOOST_ROOT: C:/Libraries/boost_1_65_1
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -75,6 +82,11 @@ install:
       if ($Env:MSYS -eq "ON")
       {
         $CMD_PREFIX="${Env:MSYS_PATH}/usr/bin/env MSYSTEM=MSYS /bin/bash -l -c"
+        if ($Env:MSYS_UPDATE -eq "ON")
+        {
+          "$CMD_PREFIX 'pacman -Sy --noconfirm --noprogressbar'" | Invoke-Expression
+        }
+
         if ($Env:PLATFORM -eq "x64")
         {
           $PKG_PREFIX="mingw-w64-x86_64-"
