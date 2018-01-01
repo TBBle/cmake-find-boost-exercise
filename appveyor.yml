@@ -130,6 +130,17 @@ build_script:
         if ($LastExitCode -ne 0) { exit }
       }
 
+after_build:
+  - ps: |
+      if ($Env:GENERATOR -eq "Ninja")
+      {
+        $BIN_PATH="./datetime_1.exe"
+      } else {
+        $BIN_PATH="${Env:CONFIGURATION}/datetime_1.exe"
+      }
+
+      Push-AppveyorArtifact $BIN_PATH
+
 test_script:
   - ps: |
       # Already in build/ after the build script
