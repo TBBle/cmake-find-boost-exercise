@@ -1424,7 +1424,8 @@ endif()
 #           First character is the architecture, then word-size, either 32 or 64
 #           Only used in 'versioned' layout, added in Boost 1.66.0
 set(_boost_ARCHITECTURE_TAG "")
-if(NOT Boost_VERSION VERSION_LESS 106600)
+# WIN32/MINGW is due to a limitation of ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}
+if(WIN32 AND NOT MINGW AND NOT Boost_VERSION VERSION_LESS 106600)
   string(APPEND _boost_ARCHITECTURE_TAG "-")
   # This needs to be kept in-sync with the section of CMakePlatformId.h.in
   # inside 'defined(_WIN32) && defined(_MSC_VER)'
