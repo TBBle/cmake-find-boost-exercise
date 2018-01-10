@@ -118,7 +118,7 @@ build_script:
       if ($Env:GENERATOR -eq "Ninja")
       {
         # Single-config generator
-        ($CMD_PREFIX + "cmake .. -G `"${Env:GENERATOR}`" -DCMAKE_BUILD_TYPE=$Env:CONFIGURATION -DAUTOLINK=$Env:AUTOLINK -DSTATIC=$Env:STATIC -DCMAKE_MODULE_PATH=/c/projects/cmake-find-boost-exercise" + $CMD_SUFFIX) | Invoke-Expression
+        ($CMD_PREFIX + "cmake .. -G `"${Env:GENERATOR}`" -DCMAKE_BUILD_TYPE=$Env:CONFIGURATION -DAUTOLINK=$Env:AUTOLINK -DSTATIC=$Env:STATIC -DCMAKE_MODULE_PATH=$PWD/.." + $CMD_SUFFIX) | Invoke-Expression
         if ($LastExitCode -ne 0) { exit }
         ($CMD_PREFIX + "cmake --build ." + $CMD_SUFFIX) | Invoke-Expression
         if ($LastExitCode -ne 0) { exit }
